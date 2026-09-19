@@ -92,22 +92,54 @@ Then open <http://127.0.0.1:8788>.
 ### Swapping in real photography
 
 All the scenery — the hero, the product panels, the six supply-network thumbnails and the
-closing band — is **illustrated SVG** so the site deploys with zero external requests and
-no image licensing. To use real photos instead, drop your files in `assets/img/` and update
-the matching `<img src>` in `index.html`:
+closing band — is **illustrated SVG** so the site deploys with zero external requests and no
+image licensing. Replace any of it by dropping your file in `assets/img/` and updating the
+matching `<img src>` in `index.html`.
 
-| Placeholder | Used for |
-| --- | --- |
-| `hero-santorini.svg` | Hero background |
-| `thumb-santorini.svg` | Card thumbnail in the hero chat mock |
-| `scene-glasses.svg` | "For Travelers" product panel |
-| `glasses.svg` | AI Glasses product shot |
-| `sn-*.svg` | Supply-network thumbnails |
-| `cta-sunset.svg` | Closing band background |
-| `avatar-sarah.svg` | Testimonial portrait |
+Sizes below are what the browser actually renders at a 1440px-wide desktop viewport. Supply
+source images at **2× those dimensions** so they stay sharp on retina screens. Every slot
+marked *cover* is cropped to fill by `object-fit: cover`, so match the aspect ratio and keep
+the subject centred.
 
-Keep the `width`/`height` attributes roughly proportional so nothing shifts while loading.
-If you add remote images, widen the `img-src` directive in `_headers`.
+| Placeholder | Where it appears | Rendered | Suggested source |
+| --- | --- | --- | --- |
+| `hero-santorini.svg` | Hero background | 1440×512 *cover* | 2880×1024 (≈2.8:1) |
+| `cta-sunset.svg` | Closing "Future of Travel" band | 1440×337 *cover* | 2880×674 (≈4.3:1) |
+| `scene-glasses.svg` | "For Travelers" product panel | 244×276 *cover* | 720×816 (≈9:10, portrait) |
+| `thumb-santorini.svg` | Thumbnail in the hero chat mock | 76×76 *cover* | 320×320 (square) |
+| `glasses.svg` | AI Glasses product shot | 380×150 | Transparent PNG, 1140×450 |
+| `avatar-sarah.svg` | Testimonial portrait | 38×38 *cover* | 160×160 (square) |
+| `sn-guides.svg` | Supply card — Guides | 126×86 *cover* | 504×344 (≈3:2) |
+| `sn-restaurants.svg` | Supply card — Restaurants | 126×86 *cover* | 504×344 (≈3:2) |
+| `sn-transport.svg` | Supply card — Transportation | 126×86 *cover* | 504×344 (≈3:2) |
+
+**Three files are used twice.** Replacing one changes both places at once:
+
+| Placeholder | Use 1 | Use 2 |
+| --- | --- | --- |
+| `sn-hotels.svg` | Supply card — Hotels, 126×86 | "Hotel Artemide" thumb in the glasses mock, 30×30 |
+| `sn-tours.svg` | Supply card — Tours, 126×86 | Itinerary row in the dashboard mock, 26×26 |
+| `sn-activities.svg` | Supply card — Activities, 126×86 | "Colosseum" card in the glasses mock, 126×42 |
+
+That reuse is intentional and usually fine — a 3:2 photo crops acceptably to a small square.
+If you want different photos in the mocks, add separate files and point only those `<img>`
+tags at them.
+
+**Two things to update alongside the hero image:**
+
+1. The Open Graph tag in `<head>` still points at the old filename:
+   `<meta property="og:image" content="https://tripm8.ai/assets/img/hero-santorini.svg">`
+2. Each `<img>` carries `width`/`height` attributes that reserve layout space while loading.
+   Update them to your file's real pixel dimensions so nothing shifts on load.
+
+Decorative images use `alt=""` on purpose — screen readers skip them because the nearby text
+already carries the meaning. Keep it that way unless the photo conveys something new. The
+three with real alt text (`glasses.svg`, `scene-glasses.svg`, `thumb-santorini.svg`) should
+get descriptions matching whatever you put there.
+
+Local files of any type are already allowed by the Content-Security-Policy in `_headers`
+(`img-src 'self' data:`). If you load images from a remote CDN instead, add that origin to
+the `img-src` directive or they will be blocked.
 
 ### Contact addresses
 
