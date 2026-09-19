@@ -91,9 +91,10 @@ Then open <http://127.0.0.1:8788>.
 
 ### Swapping in real photography
 
-Two slots already use real photographs: the hero (`hero-santorini.jpg`, 1550×950) and the
-thumbnail in its chat mock (`thumb-santorini.jpg`, 320×320). Everything else — the product
-panels, the six supply-network thumbnails and the closing band — is still
+Three slots already use real photographs: the hero (`hero-santorini.jpg`, 1550×950), the
+thumbnail in its chat mock (`thumb-santorini.jpg`, 320×320) and the "For Travelers" panel
+(`scene-glasses.jpg`, 600×678). Everything else — the AI Glasses product shot, the six
+supply-network thumbnails, the closing band and the testimonial portrait — is still
 **illustrated SVG** so the site deploys with no external requests and no image licensing.
 Replace any of it by dropping your file in `assets/img/` and updating the matching
 `<img src>` in `index.html`.
@@ -114,13 +115,18 @@ the subject centred.
 | --- | --- | --- | --- |
 | `hero-santorini.jpg` | Hero background *(already a photo)* | 1440×512 *cover* | 2880×1024 (≈2.8:1) |
 | `cta-sunset.svg` | Closing "Future of Travel" band | 1440×337 *cover* | 2880×674 (≈4.3:1) |
-| `scene-glasses.svg` | "For Travelers" product panel | 244×276 *cover* | 720×816 (≈9:10, portrait) |
+| `scene-glasses.jpg` | "For Travelers" product panel *(already a photo)* | 244×276 *cover* | 600×678 (≈9:10, portrait) |
 | `thumb-santorini.jpg` | Thumbnail in the hero chat mock *(already a photo)* | 76×76 *cover* | 320×320 (square) |
 | `glasses.svg` | AI Glasses product shot | 380×150 | Transparent PNG, 1140×450 |
 | `avatar-sarah.svg` | Testimonial portrait | 38×38 *cover* | 160×160 (square) |
 | `sn-guides.svg` | Supply card — Guides | 126×86 *cover* | 504×344 (≈3:2) |
 | `sn-restaurants.svg` | Supply card — Restaurants | 126×86 *cover* | 504×344 (≈3:2) |
 | `sn-transport.svg` | Supply card — Transportation | 126×86 *cover* | 504×344 (≈3:2) |
+
+The "For Travelers" panel has four floating elements absolutely positioned over it — a
+bubble top-right, the Colosseum card down the right side, a bubble mid-left and the hotel
+card along the bottom. Only the left ~45% of that image stays visible, so keep your subject
+in that band or it disappears behind the cards.
 
 **Three files are used twice.** Replacing one changes both places at once:
 
