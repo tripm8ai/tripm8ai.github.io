@@ -1,0 +1,12 @@
+{
+  "name": "TripM8.ai",
+  "short_name": "TripM8",
+  "description": "The AI workforce and agent network for travel.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

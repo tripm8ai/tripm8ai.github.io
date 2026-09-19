@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects. Format: <from> <to> <status>
+/home              /                     301
+/index             /                     301
+/business          /#businesses          301
+/for-business      /#businesses          301
+/travelers         /#travelers           301
+/ai-glasses        /#glasses             301
+/glasses           /#glasses             301
+/technology        /#technology          301
+/about             /#about               301
