@@ -91,10 +91,18 @@ Then open <http://127.0.0.1:8788>.
 
 ### Swapping in real photography
 
-All the scenery — the hero, the product panels, the six supply-network thumbnails and the
-closing band — is **illustrated SVG** so the site deploys with zero external requests and no
-image licensing. Replace any of it by dropping your file in `assets/img/` and updating the
-matching `<img src>` in `index.html`.
+The hero already uses a real photograph (`hero-santorini.jpg`, 2000×950). Everything else —
+the product panels, the six supply-network thumbnails and the closing band — is still
+**illustrated SVG** so the site deploys with no external requests and no image licensing.
+Replace any of it by dropping your file in `assets/img/` and updating the matching
+`<img src>` in `index.html`.
+
+The hero photo keeps the original orientation, with the subject left of centre. The white
+scrim in `.hero__media::after` is tuned around that: it holds near-opaque out to 36% and
+clears by 68%, so the headline stays legible where it crosses her hair while the village on
+the right reads through. If you swap in a different hero, expect to retune that gradient
+together with `object-position` on `.hero__media img` — screens under 940px get their own,
+softer pair, framed on the village rather than the subject.
 
 Sizes below are what the browser actually renders at a 1440px-wide desktop viewport. Supply
 source images at **2× those dimensions** so they stay sharp on retina screens. Every slot
@@ -103,7 +111,7 @@ the subject centred.
 
 | Placeholder | Where it appears | Rendered | Suggested source |
 | --- | --- | --- | --- |
-| `hero-santorini.svg` | Hero background | 1440×512 *cover* | 2880×1024 (≈2.8:1) |
+| `hero-santorini.jpg` | Hero background *(already a photo)* | 1440×512 *cover* | 2880×1024 (≈2.8:1) |
 | `cta-sunset.svg` | Closing "Future of Travel" band | 1440×337 *cover* | 2880×674 (≈4.3:1) |
 | `scene-glasses.svg` | "For Travelers" product panel | 244×276 *cover* | 720×816 (≈9:10, portrait) |
 | `thumb-santorini.svg` | Thumbnail in the hero chat mock | 76×76 *cover* | 320×320 (square) |
@@ -127,10 +135,12 @@ tags at them.
 
 **Two things to update alongside the hero image:**
 
-1. The Open Graph tag in `<head>` still points at the old filename:
-   `<meta property="og:image" content="https://tripm8.ai/assets/img/hero-santorini.svg">`
+1. The Open Graph tags in `<head>` point at the hero file and carry its dimensions —
+   `og:image`, `og:image:width`, `og:image:height`. Keep all three in sync.
 2. Each `<img>` carries `width`/`height` attributes that reserve layout space while loading.
    Update them to your file's real pixel dimensions so nothing shifts on load.
+3. Strip EXIF before committing a photo — camera and GPS metadata otherwise ship to every
+   visitor. `hero-santorini.jpg` was re-encoded through a clean buffer for this reason.
 
 Decorative images use `alt=""` on purpose — screen readers skip them because the nearby text
 already carries the meaning. Keep it that way unless the photo conveys something new. The
