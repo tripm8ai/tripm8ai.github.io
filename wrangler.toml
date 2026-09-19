@@ -1,0 +1,5 @@
+# Cloudflare Pages project configuration.
+# The site is plain static HTML/CSS/JS — no build step, the repo root is served.
+name = "tripm8ai"
+compatibility_date = "2026-09-19"
+pages_build_output_dir = "."

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 380" preserveAspectRatio="xMidYMid slice" role="img">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#E8834B"/><stop offset=".38" stop-color="#F7A967"/>
+    <stop offset=".72" stop-color="#FFCE93"/><stop offset="1" stop-color="#FFE3B6"/>
+  </linearGradient>
+  <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6E6497"/><stop offset=".4" stop-color="#454E83"/><stop offset="1" stop-color="#1E2752"/>
+  </linearGradient>
+  <radialGradient id="halo" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#FFF1C8" stop-opacity=".9"/><stop offset="1" stop-color="#FFC489" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="refl" cx=".5" cy="0" r="1">
+    <stop offset="0" stop-color="#FFE9BC" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#FFE9BC" stop-opacity=".16"/>
+    <stop offset="1" stop-color="#FFE9BC" stop-opacity="0"/>
+  </radialGradient>
+  <clipPath id="below"><rect y="242" width="1600" height="138"/></clipPath>
+</defs>
+
+<rect width="1600" height="380" fill="url(#sky)"/>
+<circle cx="1090" cy="200" r="190" fill="url(#halo)"/>
+<circle cx="1090" cy="212" r="52" fill="#FFF6DC" opacity=".95"/>
+
+<!-- headlands meeting the horizon -->
+<path d="M0 198 C 110 190 200 206 268 232 L268 246 L0 246 Z" fill="#6E5C84" opacity=".4"/>
+<path d="M1600 206 C 1516 196 1442 210 1388 234 L1388 246 L1600 246 Z" fill="#6E5C84" opacity=".34"/>
+
+<!-- sea -->
+<rect y="242" width="1600" height="138" fill="url(#sea)"/>
+<g clip-path="url(#below)">
+  <ellipse cx="1090" cy="242" rx="190" ry="128" fill="url(#refl)"/>
+  <ellipse cx="1090" cy="250" rx="118" ry="16" fill="#FFE9BC" opacity=".28"/>
+</g>
+<g fill="#FFFFFF" opacity=".05">
+  <rect x="180" y="300" width="300" height="4" rx="2"/>
+  <rect x="560" y="342" width="360" height="4" rx="2"/>
+  <rect x="1260" y="318" width="280" height="4" rx="2"/>
+</g>
+</svg>

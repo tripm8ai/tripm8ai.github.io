@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Sarah Johnson">
+  <defs>
+    <linearGradient id="av" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F3B7A0"/><stop offset="1" stop-color="#D98A72"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="40" fill="url(#av)"/>
+  <circle cx="40" cy="31" r="14" fill="#6B4A3C" opacity=".85"/>
+  <circle cx="40" cy="33" r="11" fill="#FBD9C6"/>
+  <path d="M16 80 C 18 60 28 50 40 50 C 52 50 62 60 64 80 Z" fill="#2F3A4A" opacity=".8"/>
+</svg>
