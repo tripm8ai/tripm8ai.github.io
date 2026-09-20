@@ -692,7 +692,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .glasses .btn { margin-top: 24px; }
 
 .glasses__hero { display: grid; place-items: center; }
-.glasses__hero img { width: 100%; max-width: 380px; }
+.glasses__hero img { width: 100%; max-width: 380px; height: auto; }
 
 .feat { display: grid; gap: 20px; }
 .feat li { display: flex; align-items: center; gap: 13px; }
