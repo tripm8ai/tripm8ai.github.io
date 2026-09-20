@@ -82,7 +82,10 @@ Then open <http://127.0.0.1:8788>.
 
 ## Content and branding
 
-- **Company:** TripM8 AI Inc. **Brand shown on site:** TripM8.ai
+- **Company:** TripM8 AI Inc. **Wordmark beside the logo:** TripM8
+  (page `<title>`s, `og:site_name` and the JSON-LD `alternateName` still read "TripM8.ai" —
+  that is the site/domain name rather than the lockup, so change those separately if you
+  want them to match.)
 - **Logo:** the blue mountain-peak mark in `assets/img/logo.svg`
   (`logo-mark-white.svg` is the solid-white version for dark backgrounds,
   `favicon.svg` is the rounded app icon).
@@ -92,9 +95,9 @@ Then open <http://127.0.0.1:8788>.
 ### Swapping in real photography
 
 Most slots now use real photographs: the hero, the thumbnail in its chat mock, the
-"For Travelers" panel, and five of the six supply-network cards. Still **illustrated SVG**:
-the Transportation card, the AI Glasses product shot, the closing band, the testimonial
-portrait, and the two mock thumbnails (`mock-poi.svg`, `mock-itinerary.svg`) so the site deploys with no external requests and no image licensing.
+"For Travelers" panel, all six supply-network cards and the closing band. Still
+**illustrated SVG**: the AI Glasses product shot, the testimonial portrait, and the two mock
+thumbnails (`mock-poi.svg`, `mock-itinerary.svg`) so the site deploys with no external requests and no image licensing.
 Replace any of it by dropping your file in `assets/img/` and updating the matching
 `<img src>` in `index.html`.
 
@@ -113,12 +116,12 @@ the subject centred.
 | Placeholder | Where it appears | Rendered | Suggested source |
 | --- | --- | --- | --- |
 | `hero-santorini.jpg` | Hero background *(already a photo)* | 1440×512 *cover* | 2880×1024 (≈2.8:1) |
-| `cta-sunset.svg` | Closing "Future of Travel" band | 1440×337 *cover* | 2880×674 (≈4.3:1) |
+| `cta-sunset.jpg` | Closing "Future of Travel" band *(already a photo)* | 1440×337 *cover* | 2880×674 (≈4.3:1) |
 | `scene-glasses.jpg` | "For Travelers" product panel *(already a photo)* | 244×276 *cover* | 600×678 (≈9:10, portrait) |
 | `thumb-santorini.jpg` | Thumbnail in the hero chat mock *(already a photo)* | 76×76 *cover* | 320×320 (square) |
 | `glasses.svg` | AI Glasses product shot | 380×150 | Transparent PNG, 1140×450 |
 | `avatar-sarah.svg` | Testimonial portrait | 38×38 *cover* | 160×160 (square) |
-| `sn-transport.svg` | Supply card — Transportation *(still illustrated)* | 126×86 *cover* | 504×344 (≈3:2) |
+| `sn-transport.jpg` | Supply card — Transportation | 126×86 *cover* | 600×410 |
 | `sn-hotels.jpg` | Supply card — Hotels, and the hotel thumb in the glasses mock | 126×86 *cover* | 600×410 |
 | `sn-tours.jpg` | Supply card — Tours | 126×86 *cover* | 600×410 |
 | `sn-guides.jpg` | Supply card — Guides | 126×86 *cover* | 600×410 |
