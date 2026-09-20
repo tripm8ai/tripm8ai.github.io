@@ -92,8 +92,7 @@ Then open <http://127.0.0.1:8788>.
 
 ### Swapping in real photography
 
-Every photographic slot is now a real photograph. The only remaining **illustrated SVG**
-is the AI Glasses product shot (`glasses.svg`), plus the logo files so the site deploys with no external requests and no image licensing.
+Every image slot is a real photograph now; the only SVGs left are the logo files so the site deploys with no external requests and no image licensing.
 Replace any of it by dropping your file in `assets/img/` and updating the matching
 `<img src>` in `index.html`.
 
@@ -115,7 +114,7 @@ the subject centred.
 | `cta-sunset.jpg` | Closing "Future of Travel" band *(already a photo)* | 1440×337 *cover* | 2880×674 (≈4.3:1) |
 | `scene-glasses.jpg` | "For Travelers" product panel *(already a photo)* | 244×276 *cover* | 600×678 (≈9:10, portrait) |
 | `thumb-santorini.jpg` | Thumbnail in the hero chat mock *(already a photo)* | 76×76 *cover* | 320×320 (square) |
-| `glasses.svg` | AI Glasses product shot | 380×150 | Transparent PNG, 1140×450 |
+| `glasses.png` | AI Glasses product shot *(transparent PNG)* | 380×143 | 1140×429, alpha |
 | `avatar-sarah.jpg` | Testimonial portrait *(already a photo)* | 38×38 *cover* | 200×200 (square) |
 | `mock-itinerary.jpg` | Itinerary row in the dashboard mock | 26×26 *cover* | 200×200 (square) |
 | `mock-poi.jpg` | Point-of-interest card in the glasses mock | 126×42 *cover* | 600×200 (3:1) |
@@ -152,6 +151,15 @@ Decorative images use `alt=""` on purpose — screen readers skip them because t
 already carries the meaning. Keep it that way unless the photo conveys something new. The
 three with real alt text (`glasses.svg`, `scene-glasses.svg`, `thumb-santorini.svg`) should
 get descriptions matching whatever you put there.
+
+The glasses shot is a **PNG with an alpha channel**, not a JPEG: it sits on the band's grey
+gradient, so a white studio background would show as a pale rectangle. The white sweep was
+keyed out by flooding inwards from the corners, then dropping the large enclosed areas (the
+lenses and the gap under the rim) while keeping the small specular highlights on the frame
+opaque. If you replace it, supply a cut-out PNG rather than a JPEG on white.
+
+Note that `.glasses__hero img` sets `height: auto`. Without it the browser honours the HTML
+`height` attribute and the shot renders square.
 
 Local files of any type are already allowed by the Content-Security-Policy in `_headers`
 (`img-src 'self' data:`). If you load images from a remote CDN instead, add that origin to
