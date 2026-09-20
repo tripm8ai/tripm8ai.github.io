@@ -94,10 +94,8 @@ Then open <http://127.0.0.1:8788>.
 
 ### Swapping in real photography
 
-Most slots now use real photographs: the hero, the thumbnail in its chat mock, the
-"For Travelers" panel, all six supply-network cards and the closing band. Still
-**illustrated SVG**: the AI Glasses product shot, the testimonial portrait, and the two mock
-thumbnails (`mock-poi.svg`, `mock-itinerary.svg`) so the site deploys with no external requests and no image licensing.
+Every photographic slot is now a real photograph. The only remaining **illustrated SVG**
+is the AI Glasses product shot (`glasses.svg`), plus the logo files so the site deploys with no external requests and no image licensing.
 Replace any of it by dropping your file in `assets/img/` and updating the matching
 `<img src>` in `index.html`.
 
@@ -120,7 +118,9 @@ the subject centred.
 | `scene-glasses.jpg` | "For Travelers" product panel *(already a photo)* | 244×276 *cover* | 600×678 (≈9:10, portrait) |
 | `thumb-santorini.jpg` | Thumbnail in the hero chat mock *(already a photo)* | 76×76 *cover* | 320×320 (square) |
 | `glasses.svg` | AI Glasses product shot | 380×150 | Transparent PNG, 1140×450 |
-| `avatar-sarah.svg` | Testimonial portrait | 38×38 *cover* | 160×160 (square) |
+| `avatar-sarah.jpg` | Testimonial portrait *(already a photo)* | 38×38 *cover* | 200×200 (square) |
+| `mock-itinerary.jpg` | Itinerary row in the dashboard mock | 26×26 *cover* | 200×200 (square) |
+| `mock-poi.jpg` | Point-of-interest card in the glasses mock | 126×42 *cover* | 600×200 (3:1) |
 | `sn-transport.jpg` | Supply card — Transportation | 126×86 *cover* | 600×410 |
 | `sn-hotels.jpg` | Supply card — Hotels, and the hotel thumb in the glasses mock | 126×86 *cover* | 600×410 |
 | `sn-tours.jpg` | Supply card — Tours | 126×86 *cover* | 600×410 |
@@ -133,12 +133,13 @@ bubble top-right, the Colosseum card down the right side, a bubble mid-left and 
 card along the bottom. Only the left ~45% of that image stays visible, so keep your subject
 in that band or it disappears behind the cards.
 
-**The mock thumbnails are deliberately separate.** The dashboard row says "Tokyo · Kyoto ·
-Osaka" and the point-of-interest card says "Colosseum, Rome" — specific places — so those two
-keep neutral illustrations (`mock-itinerary.svg`, `mock-poi.svg`) rather than borrowing a
-supply-network photo that would contradict the label. `sn-hotels.jpg` is the one shared file:
-it backs both the Hotels card and the "Hotel Artemide" thumb, where a hotel photo fits either
-way. If you swap it, check both places.
+**The mock thumbnails name specific places**, so they have their own files rather than
+borrowing a supply-network photo: `mock-itinerary.jpg` is Mount Fuji for the "Tokyo · Kyoto ·
+Osaka" row, and `mock-poi.jpg` is the Colosseum for the "Colosseum, Rome" card. Keep the
+picture and the label in step when you swap either.
+
+`sn-hotels.jpg` is the one shared file: it backs both the Hotels supply card and the
+"Hotel Artemide" thumb in the glasses mock. If you swap it, check both places.
 
 **Two things to update alongside the hero image:**
 
