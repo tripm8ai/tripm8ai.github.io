@@ -1,4 +1,4 @@
-# TripM8.ai
+# TripM8
 
 Marketing site for **TripM8 AI Inc.** — the AI workforce and agent network for travel.
 
@@ -82,10 +82,8 @@ Then open <http://127.0.0.1:8788>.
 
 ## Content and branding
 
-- **Company:** TripM8 AI Inc. **Wordmark beside the logo:** TripM8
-  (page `<title>`s, `og:site_name` and the JSON-LD `alternateName` still read "TripM8.ai" —
-  that is the site/domain name rather than the lockup, so change those separately if you
-  want them to match.)
+- **Company:** TripM8 AI Inc. **Brand shown throughout the site:** TripM8
+  (the domain stays tripm8.ai; only the displayed name was shortened.)
 - **Logo:** the blue mountain-peak mark in `assets/img/logo.svg`
   (`logo-mark-white.svg` is the solid-white version for dark backgrounds,
   `favicon.svg` is the rounded app icon).

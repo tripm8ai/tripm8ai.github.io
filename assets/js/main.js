@@ -1,4 +1,4 @@
-/* TripM8.ai — progressive enhancement only; the page works without JS. */
+/* TripM8 — progressive enhancement only; the page works without JS. */
 (function () {
   'use strict';
 
