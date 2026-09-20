@@ -91,11 +91,10 @@ Then open <http://127.0.0.1:8788>.
 
 ### Swapping in real photography
 
-Three slots already use real photographs: the hero (`hero-santorini.jpg`, 1550×950), the
-thumbnail in its chat mock (`thumb-santorini.jpg`, 320×320) and the "For Travelers" panel
-(`scene-glasses.jpg`, 600×678). Everything else — the AI Glasses product shot, the six
-supply-network thumbnails, the closing band and the testimonial portrait — is still
-**illustrated SVG** so the site deploys with no external requests and no image licensing.
+Most slots now use real photographs: the hero, the thumbnail in its chat mock, the
+"For Travelers" panel, and five of the six supply-network cards. Still **illustrated SVG**:
+the Transportation card, the AI Glasses product shot, the closing band, the testimonial
+portrait, and the two mock thumbnails (`mock-poi.svg`, `mock-itinerary.svg`) so the site deploys with no external requests and no image licensing.
 Replace any of it by dropping your file in `assets/img/` and updating the matching
 `<img src>` in `index.html`.
 
@@ -119,26 +118,24 @@ the subject centred.
 | `thumb-santorini.jpg` | Thumbnail in the hero chat mock *(already a photo)* | 76×76 *cover* | 320×320 (square) |
 | `glasses.svg` | AI Glasses product shot | 380×150 | Transparent PNG, 1140×450 |
 | `avatar-sarah.svg` | Testimonial portrait | 38×38 *cover* | 160×160 (square) |
-| `sn-guides.svg` | Supply card — Guides | 126×86 *cover* | 504×344 (≈3:2) |
-| `sn-restaurants.svg` | Supply card — Restaurants | 126×86 *cover* | 504×344 (≈3:2) |
-| `sn-transport.svg` | Supply card — Transportation | 126×86 *cover* | 504×344 (≈3:2) |
+| `sn-transport.svg` | Supply card — Transportation *(still illustrated)* | 126×86 *cover* | 504×344 (≈3:2) |
+| `sn-hotels.jpg` | Supply card — Hotels, and the hotel thumb in the glasses mock | 126×86 *cover* | 600×410 |
+| `sn-tours.jpg` | Supply card — Tours | 126×86 *cover* | 600×410 |
+| `sn-guides.jpg` | Supply card — Guides | 126×86 *cover* | 600×410 |
+| `sn-activities.jpg` | Supply card — Activities | 126×86 *cover* | 600×410 |
+| `sn-restaurants.jpg` | Supply card — Restaurants | 126×86 *cover* | 600×410 |
 
 The "For Travelers" panel has four floating elements absolutely positioned over it — a
 bubble top-right, the Colosseum card down the right side, a bubble mid-left and the hotel
 card along the bottom. Only the left ~45% of that image stays visible, so keep your subject
 in that band or it disappears behind the cards.
 
-**Three files are used twice.** Replacing one changes both places at once:
-
-| Placeholder | Use 1 | Use 2 |
-| --- | --- | --- |
-| `sn-hotels.svg` | Supply card — Hotels, 126×86 | "Hotel Artemide" thumb in the glasses mock, 30×30 |
-| `sn-tours.svg` | Supply card — Tours, 126×86 | Itinerary row in the dashboard mock, 26×26 |
-| `sn-activities.svg` | Supply card — Activities, 126×86 | "Colosseum" card in the glasses mock, 126×42 |
-
-That reuse is intentional and usually fine — a 3:2 photo crops acceptably to a small square.
-If you want different photos in the mocks, add separate files and point only those `<img>`
-tags at them.
+**The mock thumbnails are deliberately separate.** The dashboard row says "Tokyo · Kyoto ·
+Osaka" and the point-of-interest card says "Colosseum, Rome" — specific places — so those two
+keep neutral illustrations (`mock-itinerary.svg`, `mock-poi.svg`) rather than borrowing a
+supply-network photo that would contradict the label. `sn-hotels.jpg` is the one shared file:
+it backs both the Hotels card and the "Hotel Artemide" thumb, where a hotel photo fits either
+way. If you swap it, check both places.
 
 **Two things to update alongside the hero image:**
 
