@@ -27,14 +27,19 @@ The repository root *is* the deployable output, so there is nothing to compile.
 4. **Save and Deploy.** Every push to the selected branch redeploys automatically;
    other branches get preview URLs.
 
-### Option B — direct upload with Wrangler
+### Option B — direct upload
+
+Drag the repository folder onto the Pages dashboard's upload area, or run:
 
 ```bash
 npx wrangler pages deploy . --project-name=tripm8ai
 ```
 
-`wrangler.toml` already sets `pages_build_output_dir = "."`, so the command needs no
-extra flags.
+**Do not add a `wrangler.toml` to the repository root.** The drag-and-drop uploader treats a
+wrangler config as a signal that the project needs a build and refuses it with *"This
+uploader does not yet support projects that require a build process."* The site has no build
+step, so it does not need the file — `wrangler pages deploy` takes the project name on the
+command line instead.
 
 ### Custom domain
 
@@ -56,7 +61,6 @@ DNS is already on Cloudflare the records are created for you; TLS is issued auto
 | `assets/js/main.js` | Sticky header, mobile menu, scroll-spy, reveal-on-scroll |
 | `assets/img/*.svg` | Logo and all artwork |
 | `robots.txt`, `sitemap.xml`, `site.webmanifest` | SEO / PWA metadata |
-| `wrangler.toml` | Pages project config for direct upload |
 
 ### Caching note
 
