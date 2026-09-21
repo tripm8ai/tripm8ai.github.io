@@ -58,6 +58,60 @@
     sections.forEach(function (s) { spy.observe(s); });
   }
 
+  /* ---- Waitlist form -------------------------------------------------- */
+  var wlForm = document.getElementById('waitlistForm');
+  var wlMsg = document.getElementById('waitlistMsg');
+
+  if (wlForm && wlMsg && window.fetch) {
+    var email = wlForm.querySelector('#wl-email');
+
+    var say = function (text, ok) {
+      wlMsg.textContent = text;
+      wlMsg.className = 'wl__msg ' + (ok ? 'is-ok' : 'is-err');
+      wlMsg.hidden = false;
+    };
+
+    email.addEventListener('input', function () {
+      email.removeAttribute('aria-invalid');
+      wlMsg.hidden = true;   // don't leave a stale error sitting under the form
+    });
+
+    wlForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      if (!email.value.trim() || !email.checkValidity()) {
+        email.setAttribute('aria-invalid', 'true');
+        email.focus();
+        say('Please enter a valid email address.', false);
+        return;
+      }
+
+      var button = wlForm.querySelector('button[type="submit"]');
+      button.disabled = true;
+      wlMsg.hidden = true;
+
+      fetch(wlForm.action, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(wlForm)
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        })
+        .then(function (r) {
+          if (!r.ok || !r.data.ok) {
+            throw new Error((r.data && r.data.error) || 'That did not go through.');
+          }
+          wlForm.classList.add('is-done');
+          say(r.data.message || "You're on the list.", true);
+        })
+        .catch(function (err) {
+          button.disabled = false;
+          say(err.message || 'That did not go through. Please try again.', false);
+        });
+    });
+  }
+
   /* ---- Reveal on scroll ---------------------------------------------- */
   var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -48,6 +48,65 @@ DNS is already on Cloudflare the records are created for you; TLS is issued auto
 
 ---
 
+## AI Glasses waitlist
+
+The "Join the Waitlist" button scrolls to a form (`#waitlist`) that asks for an email plus
+two one-tap questions — who they'd use the glasses for, and how keen they are. The keenness
+answer is the point: it separates "I'd buy on day one" from "just curious" so demand can be
+read, not guessed.
+
+Submissions go to `POST /api/waitlist`, a Cloudflare Pages Function backed by a D1 database.
+
+### One-time setup
+
+Until the binding exists the endpoint answers **503** and nothing is stored — it fails
+loudly rather than dropping signups silently.
+
+```bash
+npx wrangler d1 create tripm8-waitlist
+npx wrangler d1 execute tripm8-waitlist --remote --file=./schema.sql
+```
+
+Then in the Pages project: **Settings → Functions → D1 database bindings**, add variable
+name `WAITLIST_DB` pointing at `tripm8-waitlist`. Add it to **both** Production and Preview,
+then redeploy.
+
+> Functions need a deploy route that supports them: the Git integration and
+> `npx wrangler pages deploy .` both do. If the dashboard's drag-and-drop uploader ignores or
+> rejects the `functions/` directory, use one of those two instead — the static pages will
+> still work either way, only the form endpoint depends on it.
+
+### Reading the results
+
+```bash
+# How keen is everyone? — the demand signal
+npx wrangler d1 execute tripm8-waitlist --remote \
+  --command="SELECT keenness, COUNT(*) n FROM waitlist GROUP BY keenness ORDER BY n DESC"
+
+# Travellers vs travel businesses
+npx wrangler d1 execute tripm8-waitlist --remote \
+  --command="SELECT role, COUNT(*) n FROM waitlist GROUP BY role ORDER BY n DESC"
+
+# Signups per day, and what people asked for
+npx wrangler d1 execute tripm8-waitlist --remote \
+  --command="SELECT date(created_at) day, COUNT(*) n FROM waitlist GROUP BY day ORDER BY day DESC"
+npx wrangler d1 execute tripm8-waitlist --remote \
+  --command="SELECT email, keenness, note FROM waitlist ORDER BY created_at DESC LIMIT 20"
+```
+
+### Behaviour worth knowing
+
+- **Works without JavaScript.** The form is a plain `POST`; the Function returns a styled
+  confirmation page when the request isn't a `fetch`. With JS it submits in place instead.
+- **Email is the only required field**, deduplicated by `ON CONFLICT` — submitting twice
+  updates the answers rather than erroring or creating a second row.
+- **Spam:** a hidden honeypot field. Bots that fill it get a normal-looking success response
+  and nothing is written.
+- **Stored:** email, the two answers, the optional note (capped at 280 chars) and the
+  Cloudflare country code. No IP address. `role` and `keenness` are validated against fixed
+  lists, so anything else becomes `NULL`.
+- The privacy policy already tells visitors that joining a waitlist means giving us an email.
+
 ## What ships with the site
 
 | File | Purpose |
@@ -59,7 +118,9 @@ DNS is already on Cloudflare the records are created for you; TLS is issued auto
 | `_redirects` | Friendly URLs → on-page sections (Pages-native) |
 | `assets/css/styles.css` | All styles, driven by CSS custom properties |
 | `assets/js/main.js` | Sticky header, mobile menu, scroll-spy, reveal-on-scroll |
-| `assets/img/*.svg` | Logo and all artwork |
+| `assets/img/*` | Logo and all artwork |
+| `functions/api/waitlist.js` | Pages Function receiving waitlist signups |
+| `schema.sql` | D1 table for the waitlist |
 | `robots.txt`, `sitemap.xml`, `site.webmanifest` | SEO / PWA metadata |
 
 ### Caching note
