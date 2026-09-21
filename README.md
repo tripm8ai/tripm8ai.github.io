@@ -48,63 +48,94 @@ DNS is already on Cloudflare the records are created for you; TLS is issued auto
 
 ---
 
-## AI Glasses waitlist
+## AI Glasses waitlist — MVP validation survey
 
-The "Join the Waitlist" button scrolls to a form (`#waitlist`) that asks for an email plus
-two one-tap questions — who they'd use the glasses for, and how keen they are. The keenness
-answer is the point: it separates "I'd buy on day one" from "just curious" so demand can be
-read, not guessed.
+"Join the Waitlist" opens a three-step survey (`#waitlist`) built to test the product idea,
+not just collect addresses. Each step answers one validation question:
 
-Submissions go to `POST /api/waitlist`, a Cloudflare Pages Function backed by a D1 database.
+| Step | Asks | Tells you |
+| --- | --- | --- |
+| 1 · About you | Travel frequency, traveller vs travel business | Who is actually showing up, and whether they match the target user |
+| 2 · What's hard | Frictions abroad (multi-select), which capability they'd reach for first | Whether the problem is real, and **what to build first** |
+| 3 · Would you buy | Price band, beta-tester opt-in, email, what it must do | **Willingness to pay** — the honest signal — plus a committed test group |
+
+Nothing needs typing until step 3, which keeps the drop-off honest rather than filtering for
+patient people.
+
+### Every step is saved
+
+The browser mints a `response_id` and the form POSTs after each step, so someone who quits at
+step 2 still leaves their answers behind and `last_step` records where they stopped. **Funnel
+drop-off is itself a validation signal** — if most people bail at the price question, that is
+the finding.
+
+Submissions go to `POST /api/waitlist`, a Cloudflare Pages Function writing to D1.
 
 ### One-time setup
 
-Until the binding exists the endpoint answers **503** and nothing is stored — it fails
-loudly rather than dropping signups silently.
+Until the binding exists the endpoint answers **503** and nothing is stored — it fails loudly
+rather than dropping answers silently.
 
 ```bash
 npx wrangler d1 create tripm8-waitlist
 npx wrangler d1 execute tripm8-waitlist --remote --file=./schema.sql
 ```
 
-Then in the Pages project: **Settings → Functions → D1 database bindings**, add variable
-name `WAITLIST_DB` pointing at `tripm8-waitlist`. Add it to **both** Production and Preview,
-then redeploy.
+Then in the Pages project: **Settings → Functions → D1 database bindings**, add variable name
+`WAITLIST_DB` pointing at `tripm8-waitlist`. Add it to **both** Production and Preview, then
+redeploy.
 
 > Functions need a deploy route that supports them: the Git integration and
 > `npx wrangler pages deploy .` both do. If the dashboard's drag-and-drop uploader ignores or
-> rejects the `functions/` directory, use one of those two instead — the static pages will
-> still work either way, only the form endpoint depends on it.
+> rejects the `functions/` directory, use one of those two — the static pages work either
+> way, only the form endpoint depends on it.
 
-### Reading the results
+### Reading the answers
 
 ```bash
-# How keen is everyone? — the demand signal
-npx wrangler d1 execute tripm8-waitlist --remote \
-  --command="SELECT keenness, COUNT(*) n FROM waitlist GROUP BY keenness ORDER BY n DESC"
+d1() { npx wrangler d1 execute tripm8-waitlist --remote --command="$1"; }
 
-# Travellers vs travel businesses
-npx wrangler d1 execute tripm8-waitlist --remote \
-  --command="SELECT role, COUNT(*) n FROM waitlist GROUP BY role ORDER BY n DESC"
+# Would anyone pay? The single most useful number.
+d1 "SELECT price, COUNT(*) n FROM waitlist WHERE completed=1 GROUP BY price ORDER BY n DESC"
 
-# Signups per day, and what people asked for
-npx wrangler d1 execute tripm8-waitlist --remote \
-  --command="SELECT date(created_at) day, COUNT(*) n FROM waitlist GROUP BY day ORDER BY day DESC"
-npx wrangler d1 execute tripm8-waitlist --remote \
-  --command="SELECT email, keenness, note FROM waitlist ORDER BY created_at DESC LIMIT 20"
+# What do we build first?
+d1 "SELECT first_use, COUNT(*) n FROM waitlist WHERE first_use IS NOT NULL GROUP BY first_use ORDER BY n DESC"
+
+# Is the problem real? (frictions is a comma-separated set)
+d1 "SELECT 'language' tag, COUNT(*) n FROM waitlist WHERE frictions LIKE '%language%'
+    UNION ALL SELECT 'food',           COUNT(*) FROM waitlist WHERE frictions LIKE '%food%'
+    UNION ALL SELECT 'getting-around', COUNT(*) FROM waitlist WHERE frictions LIKE '%getting-around%'
+    UNION ALL SELECT 'booking',        COUNT(*) FROM waitlist WHERE frictions LIKE '%booking%'
+    UNION ALL SELECT 'context',        COUNT(*) FROM waitlist WHERE frictions LIKE '%context%'
+    UNION ALL SELECT 'none',           COUNT(*) FROM waitlist WHERE frictions LIKE '%none%'
+    ORDER BY n DESC"
+
+# Where does the funnel leak?
+d1 "SELECT last_step, COUNT(*) n, SUM(completed) finished FROM waitlist GROUP BY last_step ORDER BY last_step"
+
+# Who will actually test it
+d1 "SELECT email, price, first_use, note FROM waitlist WHERE beta=1 AND completed=1 ORDER BY created_at DESC"
+
+# Do frequent travellers value it more than occasional ones?
+d1 "SELECT trips, price, COUNT(*) n FROM waitlist WHERE completed=1 GROUP BY trips, price ORDER BY trips, n DESC"
+
+# Verbatims — usually where the real insight is
+d1 "SELECT note, price, role FROM waitlist WHERE note IS NOT NULL ORDER BY created_at DESC LIMIT 30"
 ```
 
 ### Behaviour worth knowing
 
-- **Works without JavaScript.** The form is a plain `POST`; the Function returns a styled
-  confirmation page when the request isn't a `fetch`. With JS it submits in place instead.
-- **Email is the only required field**, deduplicated by `ON CONFLICT` — submitting twice
-  updates the answers rather than erroring or creating a second row.
-- **Spam:** a hidden honeypot field. Bots that fill it get a normal-looking success response
-  and nothing is written.
-- **Stored:** email, the two answers, the optional note (capped at 280 chars) and the
-  Cloudflare country code. No IP address. `role` and `keenness` are validated against fixed
-  lists, so anything else becomes `NULL`.
+- **Works without JavaScript.** All three steps render at once and post together; the
+  Function mints the `response_id` server-side and returns a styled confirmation page.
+- **Only the email is required**, and only on step 3. Every other answer may be skipped, and
+  skipping is recorded as `NULL` rather than guessed at.
+- **Answering twice with the same address** folds the new answers into the existing row and
+  deletes the duplicate, so one person stays one row.
+- **Spam:** a hidden honeypot field. Bots that fill it get a plausible success response and
+  nothing is written.
+- **Stored:** the answers, the optional note (capped at 280 chars) and the Cloudflare country
+  code. No IP address. Every choice is validated against a fixed list, so anything else
+  becomes `NULL`.
 - The privacy policy already tells visitors that joining a waitlist means giving us an email.
 
 ## What ships with the site
