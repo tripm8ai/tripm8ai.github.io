@@ -11,9 +11,15 @@ script, and self-contained SVG artwork. **No build step, no dependencies, no fra
 
 The repository root *is* the deployable output, so there is nothing to compile.
 
+> **This is a Pages project, not a Workers project.** The two are configured differently and
+> are easy to mix up, because the Cloudflare dashboard lists them together under
+> "Workers & Pages". See [Pages, not Workers](#pages-not-workers) below before connecting
+> anything.
+
 ### Option A — connect the Git repository (recommended)
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** tab →
+   **Connect to Git**. Take care to use the *Pages* tab, not *Workers*.
 2. Pick this repository and the branch you want to publish.
 3. Build settings:
 
@@ -35,18 +41,43 @@ Drag the repository folder onto the Pages dashboard's upload area, or run:
 npx wrangler pages deploy . --project-name=tripm8ai
 ```
 
-**Do not add a `wrangler.toml` to the repository root.** The drag-and-drop uploader treats a
-wrangler config as a signal that the project needs a build and refuses it with *"This
-uploader does not yet support projects that require a build process."* The site has no build
-step, so it does not need the file — `wrangler pages deploy` takes the project name on the
-command line instead.
+Note the `pages` in that command. `wrangler deploy` without it deploys a **Worker**, which is
+a different product and will not work with this repository's layout.
 
 ### Custom domain
 
 Pages project → **Custom domains** → add `tripm8.ai` and `www.tripm8.ai`. If the domain's
 DNS is already on Cloudflare the records are created for you; TLS is issued automatically.
 
----
+### Pages, not Workers
+
+This repository has **no `wrangler.toml` / `wrangler.jsonc`, on purpose.** Pages does not need
+one, and its presence causes two separate failures:
+
+- The direct uploader refuses the project — *"This uploader does not yet support projects
+  that require a build process. It looks like you're trying to upload a project with a
+  wrangler config file."*
+- It nudges the repository towards the Workers path, which this layout does not fit.
+
+The reverse mistake is the one that actually bit us: connecting the repository as a **Worker**
+instead of Pages. A "Workers Builds: …" check then appears on every pull request and fails
+instantly — it runs `wrangler deploy`, finds no wrangler config, and gives up before building
+anything. The check links to `dash.cloudflare.com/…/workers/services/…`, which is how to tell
+the two apart at a glance.
+
+If that check is on a pull request, the fix is in the dashboard, not in this repository:
+
+1. Cloudflare dashboard → **Workers & Pages** → open the **Worker** named after this repo.
+2. **Settings → Build** → disconnect the GitHub repository (or delete the Worker service if
+   it was only ever created by mistake).
+3. Re-connect the repo as a **Pages** project per Option A above.
+4. On GitHub the stale check disappears from new commits; an existing pull request may need a
+   fresh push, or the check can be dismissed in branch protection settings.
+
+Why the layout does not fit Workers: `functions/api/waitlist.js` is a **Pages Function**, a
+convention Workers does not implement. Moving to Workers would mean rewriting it as a Worker
+`fetch` handler with a static-assets binding, plus a wrangler config — a different project
+shape, not a setting.
 
 ## AI Glasses waitlist — MVP validation survey
 
@@ -85,10 +116,11 @@ Then in the Pages project: **Settings → Functions → D1 database bindings**, 
 `WAITLIST_DB` pointing at `tripm8-waitlist`. Add it to **both** Production and Preview, then
 redeploy.
 
-> Functions need a deploy route that supports them: the Git integration and
-> `npx wrangler pages deploy .` both do. If the dashboard's drag-and-drop uploader ignores or
-> rejects the `functions/` directory, use one of those two — the static pages work either
-> way, only the form endpoint depends on it.
+> `functions/api/waitlist.js` is a **Pages Function**. It only runs on a Pages deployment —
+> see [Pages, not Workers](#pages-not-workers). The Git integration and
+> `npx wrangler pages deploy .` both support it; if the drag-and-drop uploader ignores the
+> `functions/` directory, use one of those two. The static pages work either way, only the
+> form endpoint depends on it.
 
 ### Reading the answers
 
