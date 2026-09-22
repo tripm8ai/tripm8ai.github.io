@@ -11,15 +11,9 @@ script, and self-contained SVG artwork. **No build step, no dependencies, no fra
 
 The repository root *is* the deployable output, so there is nothing to compile.
 
-> **This is a Pages project, not a Workers project.** The two are configured differently and
-> are easy to mix up, because the Cloudflare dashboard lists them together under
-> "Workers & Pages". See [Pages, not Workers](#pages-not-workers) below before connecting
-> anything.
-
 ### Option A — connect the Git repository (recommended)
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** tab →
-   **Connect to Git**. Take care to use the *Pages* tab, not *Workers*.
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
 2. Pick this repository and the branch you want to publish.
 3. Build settings:
 
@@ -41,134 +35,18 @@ Drag the repository folder onto the Pages dashboard's upload area, or run:
 npx wrangler pages deploy . --project-name=tripm8ai
 ```
 
-Note the `pages` in that command. `wrangler deploy` without it deploys a **Worker**, which is
-a different product and will not work with this repository's layout.
+**Do not add a `wrangler.toml` to the repository root.** The drag-and-drop uploader treats a
+wrangler config as a signal that the project needs a build and refuses it with *"This
+uploader does not yet support projects that require a build process."* The site has no build
+step, so it does not need the file — `wrangler pages deploy` takes the project name on the
+command line instead.
 
 ### Custom domain
 
 Pages project → **Custom domains** → add `tripm8.ai` and `www.tripm8.ai`. If the domain's
 DNS is already on Cloudflare the records are created for you; TLS is issued automatically.
 
-### Pages, not Workers
-
-This repository has **no `wrangler.toml` / `wrangler.jsonc`, on purpose.** Pages does not need
-one, and its presence causes two separate failures:
-
-- The direct uploader refuses the project — *"This uploader does not yet support projects
-  that require a build process. It looks like you're trying to upload a project with a
-  wrangler config file."*
-- It nudges the repository towards the Workers path, which this layout does not fit.
-
-The reverse mistake is the one that actually bit us: connecting the repository as a **Worker**
-instead of Pages. A "Workers Builds: …" check then appears on every pull request and fails
-instantly — it runs `wrangler deploy`, finds no wrangler config, and gives up before building
-anything. The check links to `dash.cloudflare.com/…/workers/services/…`, which is how to tell
-the two apart at a glance.
-
-If that check is on a pull request, the fix is in the dashboard, not in this repository:
-
-1. Cloudflare dashboard → **Workers & Pages** → open the **Worker** named after this repo.
-2. **Settings → Build** → disconnect the GitHub repository (or delete the Worker service if
-   it was only ever created by mistake).
-3. Re-connect the repo as a **Pages** project per Option A above.
-4. On GitHub the stale check disappears from new commits; an existing pull request may need a
-   fresh push, or the check can be dismissed in branch protection settings.
-
-Why the layout does not fit Workers: `functions/api/waitlist.js` is a **Pages Function**, a
-convention Workers does not implement. Moving to Workers would mean rewriting it as a Worker
-`fetch` handler with a static-assets binding, plus a wrangler config — a different project
-shape, not a setting.
-
-## AI Glasses waitlist — MVP validation survey
-
-"Join the Waitlist" opens a three-step survey (`#waitlist`) built to test the product idea,
-not just collect addresses. Each step answers one validation question:
-
-| Step | Asks | Tells you |
-| --- | --- | --- |
-| 1 · About you | Travel frequency, traveller vs travel business | Who is actually showing up, and whether they match the target user |
-| 2 · What's hard | Frictions abroad (multi-select), which capability they'd reach for first | Whether the problem is real, and **what to build first** |
-| 3 · Would you buy | Price band, beta-tester opt-in, email, what it must do | **Willingness to pay** — the honest signal — plus a committed test group |
-
-Nothing needs typing until step 3, which keeps the drop-off honest rather than filtering for
-patient people.
-
-### Every step is saved
-
-The browser mints a `response_id` and the form POSTs after each step, so someone who quits at
-step 2 still leaves their answers behind and `last_step` records where they stopped. **Funnel
-drop-off is itself a validation signal** — if most people bail at the price question, that is
-the finding.
-
-Submissions go to `POST /api/waitlist`, a Cloudflare Pages Function writing to D1.
-
-### One-time setup
-
-Until the binding exists the endpoint answers **503** and nothing is stored — it fails loudly
-rather than dropping answers silently.
-
-```bash
-npx wrangler d1 create tripm8-waitlist
-npx wrangler d1 execute tripm8-waitlist --remote --file=./schema.sql
-```
-
-Then in the Pages project: **Settings → Functions → D1 database bindings**, add variable name
-`WAITLIST_DB` pointing at `tripm8-waitlist`. Add it to **both** Production and Preview, then
-redeploy.
-
-> `functions/api/waitlist.js` is a **Pages Function**. It only runs on a Pages deployment —
-> see [Pages, not Workers](#pages-not-workers). The Git integration and
-> `npx wrangler pages deploy .` both support it; if the drag-and-drop uploader ignores the
-> `functions/` directory, use one of those two. The static pages work either way, only the
-> form endpoint depends on it.
-
-### Reading the answers
-
-```bash
-d1() { npx wrangler d1 execute tripm8-waitlist --remote --command="$1"; }
-
-# Would anyone pay? The single most useful number.
-d1 "SELECT price, COUNT(*) n FROM waitlist WHERE completed=1 GROUP BY price ORDER BY n DESC"
-
-# What do we build first?
-d1 "SELECT first_use, COUNT(*) n FROM waitlist WHERE first_use IS NOT NULL GROUP BY first_use ORDER BY n DESC"
-
-# Is the problem real? (frictions is a comma-separated set)
-d1 "SELECT 'language' tag, COUNT(*) n FROM waitlist WHERE frictions LIKE '%language%'
-    UNION ALL SELECT 'food',           COUNT(*) FROM waitlist WHERE frictions LIKE '%food%'
-    UNION ALL SELECT 'getting-around', COUNT(*) FROM waitlist WHERE frictions LIKE '%getting-around%'
-    UNION ALL SELECT 'booking',        COUNT(*) FROM waitlist WHERE frictions LIKE '%booking%'
-    UNION ALL SELECT 'context',        COUNT(*) FROM waitlist WHERE frictions LIKE '%context%'
-    UNION ALL SELECT 'none',           COUNT(*) FROM waitlist WHERE frictions LIKE '%none%'
-    ORDER BY n DESC"
-
-# Where does the funnel leak?
-d1 "SELECT last_step, COUNT(*) n, SUM(completed) finished FROM waitlist GROUP BY last_step ORDER BY last_step"
-
-# Who will actually test it
-d1 "SELECT email, price, first_use, note FROM waitlist WHERE beta=1 AND completed=1 ORDER BY created_at DESC"
-
-# Do frequent travellers value it more than occasional ones?
-d1 "SELECT trips, price, COUNT(*) n FROM waitlist WHERE completed=1 GROUP BY trips, price ORDER BY trips, n DESC"
-
-# Verbatims — usually where the real insight is
-d1 "SELECT note, price, role FROM waitlist WHERE note IS NOT NULL ORDER BY created_at DESC LIMIT 30"
-```
-
-### Behaviour worth knowing
-
-- **Works without JavaScript.** All three steps render at once and post together; the
-  Function mints the `response_id` server-side and returns a styled confirmation page.
-- **Only the email is required**, and only on step 3. Every other answer may be skipped, and
-  skipping is recorded as `NULL` rather than guessed at.
-- **Answering twice with the same address** folds the new answers into the existing row and
-  deletes the duplicate, so one person stays one row.
-- **Spam:** a hidden honeypot field. Bots that fill it get a plausible success response and
-  nothing is written.
-- **Stored:** the answers, the optional note (capped at 280 chars) and the Cloudflare country
-  code. No IP address. Every choice is validated against a fixed list, so anything else
-  becomes `NULL`.
-- The privacy policy already tells visitors that joining a waitlist means giving us an email.
+---
 
 ## What ships with the site
 
@@ -181,9 +59,7 @@ d1 "SELECT note, price, role FROM waitlist WHERE note IS NOT NULL ORDER BY creat
 | `_redirects` | Friendly URLs → on-page sections (Pages-native) |
 | `assets/css/styles.css` | All styles, driven by CSS custom properties |
 | `assets/js/main.js` | Sticky header, mobile menu, scroll-spy, reveal-on-scroll |
-| `assets/img/*` | Logo and all artwork |
-| `functions/api/waitlist.js` | Pages Function receiving waitlist signups |
-| `schema.sql` | D1 table for the waitlist |
+| `assets/img/*.svg` | Logo and all artwork |
 | `robots.txt`, `sitemap.xml`, `site.webmanifest` | SEO / PWA metadata |
 
 ### Caching note

@@ -255,7 +255,7 @@
           Your AI travel agent, right in your glasses. Understand the world,
           get instant answers, and turn inspiration into real plans &mdash; hands-free.
         </p>
-        <a class="btn btn--dark" href="#waitlist">Join the Waitlist <span class="arw">&rarr;</span></a>
+        <a class="btn btn--dark" href="#contact">Join the Waitlist <span class="arw">&rarr;</span></a>
       </div>
 
       <div class="glasses__hero">
@@ -280,129 +280,6 @@
           <div><b>Book</b><span>Turn ideas into plans</span></div>
         </li>
       </ul>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= Waitlist ======================= -->
-<section class="section section--tight" id="waitlist">
-  <div class="wrap">
-    <div class="wl reveal">
-      <div class="wl__intro">
-        <p class="eyebrow">Join the Waitlist</p>
-        <h2 class="h2">Help us build the right pair.</h2>
-        <p>
-          TripM8 AI Glasses aren&rsquo;t finished, and what we ship first depends on answers
-          like yours. Three quick questions &mdash; nothing to type until the last one.
-        </p>
-        <ul class="wl__why">
-          <li><b>Three steps</b>, about 40 seconds.</li>
-          <li>We ask what you&rsquo;d <b>actually pay</b>, because that is the honest test.</li>
-          <li>Say yes to the beta and you&rsquo;ll be among the first to wear a pair.</li>
-        </ul>
-      </div>
-
-      <form class="wl__form" id="waitlistForm" method="post" action="/api/waitlist" novalidate>
-        <input type="hidden" name="response_id" id="wl-rid" value="">
-        <input type="hidden" name="step" id="wl-step" value="3">
-
-        <ol class="wl__steps" id="waitlistSteps" hidden>
-          <li aria-current="step">About you</li>
-          <li>What&rsquo;s hard</li>
-          <li>Would you buy</li>
-        </ol>
-
-        <!-- Step 1 — who is answering -->
-        <div class="wl__step" data-step="1">
-          <fieldset class="field">
-            <legend>How often do you travel?</legend>
-            <div class="chips">
-              <label class="chip"><input type="radio" name="trips" value="rarely"><span>Rarely</span></label>
-              <label class="chip"><input type="radio" name="trips" value="few"><span>A few times a year</span></label>
-              <label class="chip"><input type="radio" name="trips" value="monthly"><span>Most months</span></label>
-              <label class="chip"><input type="radio" name="trips" value="constantly"><span>Constantly</span></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="field">
-            <legend>You&rsquo;d use them&hellip;</legend>
-            <div class="chips">
-              <label class="chip"><input type="radio" name="role" value="traveler"><span>For my own trips</span></label>
-              <label class="chip"><input type="radio" name="role" value="business"><span>For my travel business</span></label>
-              <label class="chip"><input type="radio" name="role" value="both"><span>Both</span></label>
-            </div>
-          </fieldset>
-        </div>
-
-        <!-- Step 2 — is the problem real, and what do we build first -->
-        <div class="wl__step" data-step="2">
-          <fieldset class="field">
-            <legend>What trips you up abroad? <span class="opt">Pick any</span></legend>
-            <div class="chips">
-              <label class="chip"><input type="checkbox" name="frictions" value="language"><span>Language barriers</span></label>
-              <label class="chip"><input type="checkbox" name="frictions" value="food"><span>Finding good places to eat</span></label>
-              <label class="chip"><input type="checkbox" name="frictions" value="getting-around"><span>Getting around</span></label>
-              <label class="chip"><input type="checkbox" name="frictions" value="booking"><span>Booking on the spot</span></label>
-              <label class="chip"><input type="checkbox" name="frictions" value="context"><span>Not knowing what I&rsquo;m looking at</span></label>
-              <label class="chip"><input type="checkbox" name="frictions" value="none"><span>Nothing much, honestly</span></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="field">
-            <legend>Which would you reach for first?</legend>
-            <div class="chips">
-              <label class="chip"><input type="radio" name="first_use" value="see"><span>See &mdash; identify what I&rsquo;m looking at</span></label>
-              <label class="chip"><input type="radio" name="first_use" value="ask"><span>Ask &mdash; instant answers</span></label>
-              <label class="chip"><input type="radio" name="first_use" value="navigate"><span>Navigate &mdash; find my way</span></label>
-              <label class="chip"><input type="radio" name="first_use" value="book"><span>Book &mdash; turn ideas into plans</span></label>
-            </div>
-          </fieldset>
-        </div>
-
-        <!-- Step 3 — would they actually buy it -->
-        <div class="wl__step" data-step="3">
-          <fieldset class="field">
-            <legend>What would a pair be worth to you?</legend>
-            <div class="chips">
-              <label class="chip"><input type="radio" name="price" value="free-only"><span>Only if it&rsquo;s free</span></label>
-              <label class="chip"><input type="radio" name="price" value="under-199"><span>Under $199</span></label>
-              <label class="chip"><input type="radio" name="price" value="199-349"><span>$199&ndash;349</span></label>
-              <label class="chip"><input type="radio" name="price" value="350-599"><span>$350&ndash;599</span></label>
-              <label class="chip"><input type="radio" name="price" value="600-plus"><span>$600+</span></label>
-            </div>
-          </fieldset>
-
-          <label class="check">
-            <input type="checkbox" name="beta" value="1">
-            <span>I&rsquo;d test an early version and tell you what&rsquo;s wrong with it.</span>
-          </label>
-
-          <div class="field">
-            <label for="wl-email">Email address</label>
-            <input type="email" id="wl-email" name="email" required autocomplete="email"
-                   inputmode="email" maxlength="254" placeholder="you@example.com">
-          </div>
-
-          <div class="field">
-            <label for="wl-note">What would it have to do before you&rsquo;d buy? <span class="opt">Optional</span></label>
-            <input type="text" id="wl-note" name="note" maxlength="280"
-                   placeholder="Translate a menu without me touching anything&hellip;">
-          </div>
-        </div>
-
-        <p class="hp" aria-hidden="true">
-          <label for="wl-company">Company</label>
-          <input type="text" id="wl-company" name="company" tabindex="-1" autocomplete="off">
-        </p>
-
-        <div class="wl__actions">
-          <button class="btn btn--light" type="button" id="wlBack" hidden>&larr; Back</button>
-          <button class="btn btn--dark" type="submit" id="wlNext">Join the Waitlist <span class="arw">&rarr;</span></button>
-        </div>
-
-        <p class="wl__note">We&rsquo;ll only email you about AI Glasses. No sharing, unsubscribe anytime.</p>
-        <p class="wl__msg" id="waitlistMsg" role="status" aria-live="polite" hidden></p>
-      </form>
     </div>
   </div>
 </section>
